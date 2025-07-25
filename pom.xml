@@ -358,4 +358,11 @@
             </build>
         </profile>
     </profiles>
+
+    <distributionManagement>
+        <repository>
+            <id>internal-repo</id>
+        </repository>
+    </distributionManagement>
+    
 </project>

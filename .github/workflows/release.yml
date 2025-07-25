@@ -30,5 +30,4 @@ jobs:
 
             - name: Create Release
               if: ${{ github.event.inputs.dry-run != 'true' }}
-              run: |
-                # Actual release steps here
+              run: echo "Creating release."

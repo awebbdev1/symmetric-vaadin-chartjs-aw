@@ -2,11 +2,11 @@ name: Release
 
 on:
     workflow_dispatch:
-        inputs:
-            dry-run:
-                description: 'Dry run the release?'
-                required: false
-                default: true
+        #inputs:
+        #    dry-run:
+        #        description: 'Dry run the release?'
+        #        required: false
+        #        default: true
 
 jobs:
     create-release:

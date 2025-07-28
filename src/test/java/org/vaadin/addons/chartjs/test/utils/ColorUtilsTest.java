@@ -11,7 +11,6 @@ public class ColorUtilsTest {
   public void toRgb() {
     int[] rgbArr = {54, 162, 235};
     assertEquals("rgb(54,162,235)", ColorUtils.toRgb(rgbArr));
-    assertEquals(1, 2);
   }
 
   @Test

@@ -114,7 +114,7 @@ jobs:
                 EOF
 
             - run: |
-                echo "Created gitversion.yml:" cat .gitversion.yml
+                echo "Created gitversion.yml:"  > .gitversion.yml
 
             - name: Get Next Version
               id: compute_version

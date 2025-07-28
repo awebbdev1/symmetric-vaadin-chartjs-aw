@@ -36,6 +36,7 @@ jobs:
               with:
                   clean: true
                   fetch-depth: 0
+                  persistCredentials: true 
             
             - name: Set up Java
               uses: actions/setup-java@v4

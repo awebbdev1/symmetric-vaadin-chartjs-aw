@@ -115,6 +115,9 @@ jobs:
 
             - run: |
                 echo "Created gitversion.yml:"  > .gitversion.yml
+                echo "file_content<<EOF" >> $GITHUB_OUTPUT
+                cat .gitversion.yml >> $GITHUB_OUTPUT
+                echo "EOF" >> $GITHUB_OUTPUT
 
             - name: Get Next Version
               id: compute_version

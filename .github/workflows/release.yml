@@ -5,7 +5,7 @@ on:
         inputs:
             version:
                 type: string
-                description: Full version number to be release (example: 0.1.0)
+                description: Full version number to be release (example 0.1.0)
                 required: true
             tag:
                 type: boolean

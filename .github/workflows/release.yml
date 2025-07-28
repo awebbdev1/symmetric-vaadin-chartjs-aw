@@ -85,7 +85,7 @@ jobs:
             - name: Deploy simulation
               if: ${{ github.event.inputs.dry-run == 'true' }}
               # Simply for POC for now. TODO: remove or simulate more accurately.
-              run: mvn clean -B package --file pom.xml
+              run: mvn clean test
             
             - name: Tag and Push
               if: inputs.tag

@@ -89,7 +89,7 @@ jobs:
                 git push origin releases/${{ inputs.version }}
 
             - name: Create Release
-              if: steps.check_tag_exists.outputs.should_tag
+              if: inputs.tag
               uses: softprops/action-gh-release@v2
               with:
                 tag_name: ${{ inputs.version }}

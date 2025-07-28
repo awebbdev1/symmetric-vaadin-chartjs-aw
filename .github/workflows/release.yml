@@ -3,20 +3,20 @@ name: Release
 on:
     workflow_dispatch:
         inputs:
-            version:
-                type: string
-                description: Full version number to be release (example 0.1.0)
-                required: true
-            tag:
-                type: boolean
-                description: Create a git tag for this release?
-                default: true
+            #version:
+            #    type: string
+            #    description: Full version number to be release (example 0.1.0)
+            #    required: true
+            #tag:
+            #    type: boolean
+            #    description: Create a git tag for this release?
+            #    default: true
             dry-run:
                 description: Dry run the release? Primary use is testing.
                 required: false
                 default: false
                 
-run-name: "Release: ${{ inputs.version }}"
+#run-name: "Release: ${{ inputs.version }}"
 
 jobs:
     create-release:
@@ -132,7 +132,13 @@ jobs:
                 else
                     echo "should_tag=true" >> $GITHUB_OUTPUT
                 fi
-                
+
+            #- name: Create Tag and Push
+            #  if: inputs.tag
+            #  run: |
+            #    git tag releases/${{ inputs.version }} HEAD
+            #    git push origin releases/${{ inputs.version }}
+            
             - name: Create SemVer Tag
               if: steps.check_tag_exists.outputs.should_tag
               id: create_tag
@@ -146,12 +152,6 @@ jobs:
             - name: Deploy
               if: ${{ github.event.inputs.dry-run != 'true' }}
               run: mvn clean deploy -s ~/.m2/settings.xml
-            
-            #- name: Create Tag and Push
-            #  if: inputs.tag
-            #  run: |
-            #    git tag releases/${{ inputs.version }} HEAD
-            #    git push origin releases/${{ inputs.version }}
 
             - name: Create Release in GitHub
               if: steps.check_tag_exists.outputs.should_tag
@@ -161,8 +161,5 @@ jobs:
                 name: "Release ${{ steps.create_tag.outputs.TAG }}"
                 body: |
                     ## Release ${{ steps.create_tag.outputs.TAG }}
-            
-                    ### Changes
-                    ${{ env.CHANGELOG }}
                 draft: false
                 prerelease: false

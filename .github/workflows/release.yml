@@ -11,11 +11,11 @@ on:
                 type: boolean
                 description: Create a git tag for this release?
                 default: true
+            dry-run:
+                description: Dry run the release? Primary use is testing.
+                required: false
+                default: false
                 
-        #    dry-run:
-        #        description: 'Dry run the release?'
-        #        required: false
-        #        default: true
 run-name: "Release: ${{ inputs.version }}"
 
 jobs:
@@ -77,23 +77,18 @@ jobs:
                     </profiles>
                 </settings>
                 EOF
-                
+
             - name: Deploy
+              if: ${{ github.event.inputs.dry-run != 'true' }}
               run: mvn clean deploy -s ~/.m2/settings.xml
 
+            - name: Deploy simulation
+              if: ${{ github.event.inputs.dry-run == 'true' }}
+              # Simply for POC for now. TODO: remove or simulate more accurately.
+              run: mvn clean -B package --file pom.xml
+            
             - name: Tag and Push
               if: inputs.tag
               run: |
                 git tag releases/${{ inputs.version }} HEAD
                 git push origin releases/${{ inputs.version }}
-            
-            #- name: Build with Maven
-            #  run: mvn clean -B package --file pom.xml
-
-            #- name: Simulate Release
-            #  if: ${{ github.event.inputs.dry-run == 'true' }}
-            #  run: echo "Dry run enabled - skipping tag, version bump, and deploy."
-
-            #- name: Create Release
-            #  if: ${{ github.event.inputs.dry-run != 'true' }}
-            #  run: echo "Creating release."

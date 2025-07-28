@@ -1,0 +1,131 @@
+name: Create Release Number
+
+on:
+  workflow_call:
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v3.2.1
+        with:
+          versionSpec: '6.3.x'
+          preferLatestVersion: true
+
+      - name: Configure GitVersion
+        run: |
+          cat << 'EOF' > .gitversion.yml
+          mode: ContinuousDeployment
+          increment: None
+          commit-message-incrementing: Enabled
+          major-version-bump-message: '^(feat|fix|chore|ci|docs|test)(\(.+\))?\!:.*'
+          minor-version-bump-message: '^feat(\(.+\))?:.*'
+          patch-version-bump-message: '^(fix|ci)(\(.+\))?:.*'
+          branches:
+            main:
+              is-main-branch: true
+              increment: None
+            feature:
+              label: alpha
+              regex: ^(feat(ure)?|(bug)?fix)[\/-](?<BranchName>.+)
+              increment: None
+            release:
+              label: rc
+              regex: ^releases?[\/-](?<BranchName>.+)
+              increment: None
+          ignore:
+            sha: []
+          merge-message-formats: {}
+          EOF
+
+      - name: Get Next Version
+        id: compute_version
+        uses: gittools/actions/gitversion/execute@v3.2.1
+        with:
+          useConfigFile: true
+          configFilePath: .gitversion.yml
+
+      - run: |
+          echo "Computed SemVer: ${{ steps.compute_version.outputs.semVer }}"
+
+      - name: Does Tag Exist?
+        id: check_tag_exists
+        run: |
+          TAG="v${{ steps.compute_version.outputs.semVer }}"
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
+            echo "Tag $TAG already exists. Skipping tagging."
+          else
+            echo "should_tag=true" >> $GITHUB_OUTPUT
+          fi
+
+      #- name: Configure Git
+      #  if: steps.check_tag_exists.outputs.should_tag
+      #  run: |
+      #    git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      #    git config user.name "github-actions[bot]"
+
+      - name: Create SemVer Tag
+        if: steps.check_tag_exists.outputs.should_tag
+        id: create_tag
+        run: |
+          TAG="v${{ steps.compute_version.outputs.semVer }}"
+          git tag $TAG
+          git push origin $TAG
+          
+          echo "TAG=$TAG" >> $GITHUB_OUTPUT
+
+      - name: Build Changelog
+        id: changelog
+        if: steps.check_tag_exists.outputs.should_tag
+        run: |
+          # Get the current tag
+          CURRENT_TAG=${{ steps.create_tag.outputs.TAG }}
+          
+          # Get the previous tag (sorted by commit date, excluding current tag)
+          PREV_TAG=$(git tag --sort=-committerdate | grep -v "$CURRENT_TAG" | head -n 1)
+          
+          # If no previous tag exists, use the first commit
+          if [ -z "$PREV_TAG" ]; then
+            PREV_TAG=$(git rev-list --max-parents=0 HEAD)
+          fi
+          
+          # Get commit messages between the previous and current tag
+          CHANGELOG=$(git log --pretty="- %s (%h)" $PREV_TAG..$CURRENT_TAG)
+          
+          # Write changelog to environment file
+          echo "CHANGELOG<<EOF" >> $GITHUB_ENV
+          echo "$CHANGELOG" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: Update Tracking Tag
+        if: steps.check_tag_exists.outputs.should_tag
+        run: |
+          SEMVER="${{ steps.compute_version.outputs.semVer }}"
+          MAJOR_VERSION=$(echo $SEMVER | cut -d '.' -f 1)
+          TRACKING_TAG="v$MAJOR_VERSION"
+          
+          git tag -f $TRACKING_TAG
+          git push origin $TRACKING_TAG -f
+
+      - name: Create Release
+        if: steps.check_tag_exists.outputs.should_tag
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.create_tag.outputs.TAG }}
+          name: "Release ${{ steps.create_tag.outputs.TAG }}"
+          body: |
+            ## Release ${{ steps.create_tag.outputs.TAG }}
+            
+            ### Changes
+            ${{ env.CHANGELOG }}
+          draft: false
+          prerelease: false

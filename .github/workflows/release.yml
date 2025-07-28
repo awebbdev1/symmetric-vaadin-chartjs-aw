@@ -109,7 +109,6 @@ jobs:
                         regex: ^releases?[\/-](?<BranchName>.+)
                         increment: None
                 ignore:
-                sha: []
                 merge-message-formats: {}
                 EOF
                 

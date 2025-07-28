@@ -63,9 +63,14 @@ jobs:
                     </profiles>
                 </settings>
                 EOF
-
+                
             - name: Deploy
               run: mvn clean deploy -s ~/.m2/settings.xml
+
+    create-release-with-number:
+        uses: ./.github/workflows/create-release-number.yml
+        permissions:
+          contents: write
             #- name: Build with Maven
             #  run: mvn clean -B package --file pom.xml
 

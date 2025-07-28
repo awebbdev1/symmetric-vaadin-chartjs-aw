@@ -2,11 +2,21 @@ name: Release
 
 on:
     workflow_dispatch:
-        #inputs:
+        inputs:
+            version:
+                type: string
+                description: Full version number to be release (example: 0.1.0)
+                required: true
+            tag:
+                type: boolean
+                description: Create a git tag for this release?
+                default: true
+                
         #    dry-run:
         #        description: 'Dry run the release?'
         #        required: false
         #        default: true
+run-name: "Release: ${{ inputs.version }}"
 
 jobs:
     create-release:
@@ -14,20 +24,24 @@ jobs:
             INTERNAL_REPO_URL: ${{ secrets.INTERNAL_REPO_URL }}
             INTERNAL_REPO_USERNAME: ${{ secrets.INTERNAL_REPO_USERNAME }}
             INTERNAL_REPO_PASSWORD: ${{ secrets.INTERNAL_REPO_PASSWORD }}
+            JDK_VERSION: '17'
         
         runs-on: ubuntu-latest
 
-        
         steps:
-            - uses: actions/checkout@v4
-            - name: Set up JDK 17
+            - name: Checkout Source
+              uses: actions/checkout@v4
+              with:
+                  clean: true
+            
+            - name: Set up Java
               uses: actions/setup-java@v4
               with:
-                  java-version: '17'
+                  java-version: ${{ env.JDK_VERSION }}
                   distribution: 'temurin'
                   cache: maven
 
-            - name: Create settings.xml
+            - name: Create Maven settings.xml
               run: |
                 mkdir -p ~/.m2
                 cat > ~/.m2/settings.xml <<EOF
@@ -67,10 +81,12 @@ jobs:
             - name: Deploy
               run: mvn clean deploy -s ~/.m2/settings.xml
 
-    create-release-with-number:
-        uses: ./.github/workflows/create-release-number.yml
-        permissions:
-          contents: write
+            - name: Tag and Push
+              if: inputs.tag
+              run: |
+                git tag releases/${{ inputs.version }} HEAD
+                git push origin releases/${{ inputs.version }}
+            
             #- name: Build with Maven
             #  run: mvn clean -B package --file pom.xml
 

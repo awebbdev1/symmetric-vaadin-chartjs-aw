@@ -82,17 +82,17 @@ jobs:
               if: ${{ github.event.inputs.dry-run != 'true' }}
               run: mvn clean deploy -s ~/.m2/settings.xml
             
-            - name: Tag and Push
+            - name: Create Tag and Push
               if: inputs.tag
               run: |
                 git tag releases/${{ inputs.version }} HEAD
                 git push origin releases/${{ inputs.version }}
 
-            - name: Create Release
+            - name: Create Release in GitHub
               if: inputs.tag
               uses: softprops/action-gh-release@v2
               with:
-                tag_name: v${{ inputs.version }}
-                name: "Release v${{ inputs.version }}"
+                tag_name: ${{ inputs.version }}
+                name: "Release ${{ inputs.version }}"
                 draft: false
                 prerelease: false

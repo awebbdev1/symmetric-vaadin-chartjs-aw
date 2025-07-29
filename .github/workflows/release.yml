@@ -147,6 +147,28 @@ jobs:
           
                 echo "TAG=$TAG" >> $GITHUB_OUTPUT
 
+            - name: Build Changelog
+              id: changelog
+              if: steps.check_tag_exists.outputs.should_tag
+              run: |
+                CURRENT_TAG=${{ steps.create_tag.outputs.TAG }}
+
+                # Get the previous tag (sorted by commit date, excluding current tag)
+                PREV_TAG=$(git tag --sort=-committerdate | grep -v "$CURRENT_TAG" | head -n 1)
+
+                # If no previous tag exists, use the first commit
+                if [ -z "$PREV_TAG" ]; then
+                PREV_TAG=$(git rev-list --max-parents=0 HEAD)
+                fi
+
+                # Get commit messages between the previous and current tag
+                CHANGELOG=$(git log --pretty="- %s (%h)" $PREV_TAG..$CURRENT_TAG)
+
+                # Write changelog to environment file
+                echo "CHANGELOG<<EOF" >> $GITHUB_ENV
+                echo "$CHANGELOG" >> $GITHUB_ENV
+                echo "EOF" >> $GITHUB_ENV
+                
             - name: Create Release in GitHub
               if: steps.check_tag_exists.outputs.should_tag
               uses: softprops/action-gh-release@v2
@@ -155,5 +177,8 @@ jobs:
                 name: "Release ${{ steps.create_tag.outputs.TAG }}"
                 body: |
                     ## Release ${{ steps.create_tag.outputs.TAG }}
+
+                    ### Changes
+                    ${{ env.CHANGELOG }}
                 draft: false
                 prerelease: false

@@ -24,7 +24,7 @@ jobs:
             INTERNAL_REPO_URL: ${{ secrets.INTERNAL_REPO_URL }}
             INTERNAL_REPO_USERNAME: ${{ secrets.INTERNAL_REPO_USERNAME }}
             INTERNAL_REPO_PASSWORD: ${{ secrets.INTERNAL_REPO_PASSWORD }}
-            JDK_VERSION: '17'
+            JAVA_VERSION: '17'
         
         runs-on: ubuntu-latest
         permissions:
@@ -40,7 +40,7 @@ jobs:
             - name: Set up Java
               uses: actions/setup-java@v4
               with:
-                  java-version: ${{ env.JDK_VERSION }}
+                  java-version: ${{ env.JAVA_VERSION }}
                   distribution: 'temurin'
                   cache: maven
 

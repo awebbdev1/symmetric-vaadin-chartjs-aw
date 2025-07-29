@@ -14,6 +14,9 @@ jobs:
       pull-requests: write
 
     steps:
+      - run: |
+            echo "Using PR Policy Title Pattern: ${{ vars.PR_POLICY_TITLE_PATTERN }}"
+
       - name: Match Title
         uses: actions-ecosystem/action-regex-match@v2
         id: title-pattern
@@ -32,7 +35,7 @@ jobs:
       - name: Report Invalid Title
         if: failure() && steps.title-pattern-check.outcome == 'failure'
         uses: actions/github-script@v7
-        with: 
+        with:
           script: |
             const prComments = await github.rest.issues.listComments({
                 issue_number: context.issue.number,
@@ -48,19 +51,19 @@ jobs:
                 break;
               }
             }
-            
+
             let commentBody = `Please update your pull request title to the required format:
-            
+
             **RegEx**
             \`\`\`
             ${{ vars.PR_POLICY_TITLE_PATTERN }}
             \`\`\`
-            
+
             **Simplified**
             \`\`\`
             <type>\[\!\]: <summary>
             \`\`\`
-            
+
             * \`type\` - The type of pull request. This can be one of the following types:
               * \`feat\` - An implementation of a feature; increments the Minor version unless suffixed with \`\!\`.
               * \`fix\` - A general bugfix; increments the Patch version unless suffixed with \`\!\`.

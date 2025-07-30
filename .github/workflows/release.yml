@@ -143,7 +143,7 @@ jobs:
               run: |
                 TAG="v${{ steps.compute_version.outputs.semVer }}"
                 git tag $TAG
-                git push origin $TAG
+                git push origin release/$TAG
           
                 echo "TAG=$TAG" >> $GITHUB_OUTPUT
 

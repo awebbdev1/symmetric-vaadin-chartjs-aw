@@ -142,8 +142,8 @@ jobs:
               id: create_tag
               run: |
                 TAG="v${{ steps.compute_version.outputs.semVer }}"
-                git tag release/$TAG
-                git push origin release/$TAG
+                git tag $TAG
+                git push origin $TAG
           
                 echo "TAG=$TAG" >> $GITHUB_OUTPUT
 

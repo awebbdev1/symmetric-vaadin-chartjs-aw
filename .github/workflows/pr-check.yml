@@ -5,6 +5,8 @@ on:
       - main
       - releases/*
     types: [ opened, reopened, edited, synchronize ]
+  
+  workflow_dispatch:   
 
 jobs:
   check-pr:

@@ -8,6 +8,6 @@ on:
 
 jobs:
   check-pr:
-    uses: ./.github/workflows/.common-pr-check.yaml
+    uses: ./.github/workflows/.common-pr-check.yml
     permissions:
       pull-requests: write

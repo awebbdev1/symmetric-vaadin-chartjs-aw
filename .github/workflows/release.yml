@@ -101,16 +101,17 @@ jobs:
                 minor-version-bump-message: '^feat(\(.+\))?:.*'
                 patch-version-bump-message: '^(fix|ci)(\(.+\))?:.*'
                 branches:
-                    main:
-                        is-main-branch: true
-                        increment: None
-                    feature:
-                        label: alpha
-                        regex: ^(feat(ure)?|(bug)?fix)[\/-](?<BranchName>.+)
-                        increment: None
+                    #main:
+                    #    is-main-branch: true
+                    #    increment: None
+                    #feature:
+                    #    label: alpha
+                    #    regex: ^(feat(ure)?|(bug)?fix)[\/-](?<BranchName>.+)
+                    #    increment: None
                     release:
-                        label: rc
-                        regex: ^releases?[\/-](?<BranchName>.+)
+                    #    label: rc
+                    #    regex: ^releases?[\/-](?<BranchName>.+)
+                        regex: ^releases?[\/-]
                         increment: None
                 ignore:
                     sha: []

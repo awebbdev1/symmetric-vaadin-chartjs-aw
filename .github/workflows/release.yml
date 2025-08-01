@@ -111,7 +111,7 @@ jobs:
                     release:
                     #    label: rc
                     #    regex: ^releases?[\/-](?<BranchName>.+)
-                        regex: ^releases?[\/-]
+                        regex: ^releases[\](?<BranchName>.+)
                         increment: None
                 ignore:
                     sha: []

@@ -110,8 +110,7 @@ jobs:
                         increment: None
                     release:
                     #    label: rc
-                    #    regex: ^releases?[\/-](?<BranchName>.+)
-                        regex: ^releases[\/](?<BranchName>.+)
+                        regex: ^releases?[\/-](?<BranchName>.+)
                         tag: ''
                         increment: Minor
                         is-release-branch: true

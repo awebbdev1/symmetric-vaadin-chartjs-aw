@@ -101,22 +101,22 @@ jobs:
                 minor-version-bump-message: '^feat(\(.+\))?:.*'
                 patch-version-bump-message: '^(fix|ci)(\(.+\))?:.*'
                 branches:
-                    #main:
-                    #    is-main-branch: true
-                    #    increment: None
-                    #feature:
-                    #    label: alpha
-                    #    regex: ^(feat(ure)?|(bug)?fix)[\/-](?<BranchName>.+)
-                    #    increment: None
+                    main:
+                        is-main-branch: true
+                        increment: None
+                    feature:
+                        label: alpha
+                        regex: ^(feat(ure)?|(bug)?fix)[\/-](?<BranchName>.+)
+                        increment: None
                     release:
                     #    label: rc
                     #    regex: ^releases?[\/-](?<BranchName>.+)
                         regex: ^releases[\/](?<BranchName>.+)
                         tag: ''
                         increment: Minor
-                    #    is-release-branch: true
-                    #    tracks-release-branches: true
-                    #    prevent-increment-of-merged-branch-version: true
+                        is-release-branch: true
+                        tracks-release-branches: true
+                        prevent-increment-of-merged-branch-version: true
                 ignore:
                     sha: []
                 merge-message-formats: {}

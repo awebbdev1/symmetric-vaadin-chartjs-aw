@@ -27,6 +27,14 @@ jobs:
             contents: write
 
         steps:
+            - name: Validate version input
+              run: |
+                echo "Validating release version: ${{ github.event.inputs.version }}"
+                if [[ ! "$${{ github.event.inputs.version }}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+                    echo "ERROR: Invalid version input. Must be of the format major.minor.patch (e.g. 2.16.0)."
+                    exit 1
+                fi
+        
             - name: Checkout Source
               uses: actions/checkout@v4
               with:
@@ -80,11 +88,11 @@ jobs:
             - name: Deploy
               if: ${{ github.event.inputs.dry-run != 'true' }}
               run: mvn clean deploy -s ~/.m2/settings.xml
-              
+            
             - name: Does Tag Exist?
               id: check_tag_exists
               run: |
-                TAG="${{ inputs.version }}"
+                TAG="${{ github.event.inputs.version }}"
                 if git rev-parse "$TAG" >/dev/null 2>&1; then
                     echo "Tag $TAG already exists. Skipping tagging."
                 else
@@ -95,7 +103,7 @@ jobs:
               if: steps.check_tag_exists.outputs.should_tag
               id: create_tag
               run: |
-                TAG="${{ inputs.version }}"
+                TAG="${{ github.event.inputs.version }}"
                 git tag $TAG
                 git push origin $TAG
           

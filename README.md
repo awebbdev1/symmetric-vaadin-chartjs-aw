@@ -7,9 +7,6 @@ This add-on was originally created by [moberwasserlechner](https://github.com/mo
 
 ## Features
 
-### Test
-This is a test.
-
 ### Current
 * Fluent api to configure the charts
 * Supported chart types are

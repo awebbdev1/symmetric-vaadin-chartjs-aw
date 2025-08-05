@@ -95,51 +95,27 @@ jobs:
               run: |
                 cat << 'EOF' > .gitversion.yml
                 mode: ContinuousDelivery
-
-                branches:
-                  version:
-                    # Matches branches like "2.16", "3.0", etc.
-                    regex: ^(?<BranchName>\d+\.\d+)$
-                    mode: ContinuousDelivery
-                    tag: ''
-                    increment: Minor
-                    is-mainline: true
-                    source-branches: ['release', 'hotfix', 'feature', 'pull-request']
-                    tracks-release-branches: true
-                    prevent-increment-of-merged-branch-version: false
-                
-                  release:
-                    # Matches "releases/2.16" or "release-2.16"
-                    regex: ^releases?[/-](?<BranchName>\d+\.\d+)$
-                    mode: ContinuousDelivery
-                    tag: ''
-                    increment: Patch
-                    is-release-branch: true
-                    source-branches: ['version', 'hotfix']
-                    prevent-increment-of-merged-branch-version: true
-                
-                  feature:
-                    regex: ^(feature|feat)[/-]
-                    increment: Inherit
-                    tag: useBranchName
-                    source-branches: ['version']
-                
-                  hotfix:
-                    regex: ^hotfix[/-]
-                    increment: Patch
-                    source-branches: ['release']
-                
-                  pull-request:
-                    regex: ^(pull|pr)[/-]
-                    tag: PullRequest
-                    increment: Inherit
-                    source-branches: ['version', 'release']
-                
-                ignore:
-                  sha: []
-                
+                increment: None
                 commit-message-incrementing: Enabled
-                tag-prefix: v
+                major-version-bump-message: '^(feat|fix|chore|ci|docs|test)(\(.+\))?\!:.*'
+                minor-version-bump-message: '^feat(\(.+\))?:.*'
+                patch-version-bump-message: '^(fix|ci)(\(.+\))?:.*'
+                branches:
+                    main:
+                        is-main-branch: true
+                        increment: None
+                    feature:
+                        label: alpha
+                        regex: ^(feat(ure)?|(bug)?fix)[\/-](?<BranchName>.+)
+                        increment: None
+                    release:
+                        label: rc
+                        regex: ^releases?[\/-](?<BranchName>.+)
+                        increment: None
+                ignore:
+                    sha: []
+                merge-message-formats: {}
+                EOF
                 
             - name: Get Next Version
               id: compute_version

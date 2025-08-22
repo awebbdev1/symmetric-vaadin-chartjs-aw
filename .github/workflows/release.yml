@@ -22,11 +22,12 @@ jobs:
             INTERNAL_REPO_PASSWORD: ${{ secrets.deployPassword }}
             JAVA_VERSION: '17'
         
-        runs-on: ubuntu-latest
+        runs-on: runs-on=${{ github.run_id }}/runner=4cpu-linux-x64/extras=s3-cache
         permissions:
             contents: write
 
         steps:
+            - uses: runs-on/action@v2
             - name: Validate version input
               shell: bash
               run: |
